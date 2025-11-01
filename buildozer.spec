@@ -74,7 +74,7 @@ p4a.branch = master
 log_level = 2
 
 # (オプション) 警告時にビルドを停止するかどうか
-warn_on_root = 1
+warn_on_root = 0
 
 # (オプション) ビルドディレクトリ
 # build_dir = ./.buildozer/build
