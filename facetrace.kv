@@ -1,0 +1,366 @@
+#:kivy 2.1.0
+
+# ★★★ ルートウィジェットそのものを、ここで直接定義する ★★★
+ScreenManager:
+    # idやcurrentは、ここには書かない
+
+    MainScreen:
+        name: 'main'
+
+    ManageScreen:
+        name: 'manage'
+
+    SearchResultScreen:
+        name: 'search_result'
+
+    LogScreen:  # ★★★ この行を追加 ★★★
+        name: 'log_screen'
+
+# --- メイン画面のUIルール ---
+<MainScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: '10dp'
+        padding: '10dp'
+
+        BoxLayout:
+            size_hint_y: None
+            height: '40dp'
+            spacing: '10dp'
+            
+            Label:
+                text: "カメラ選択:"
+                font_name: app.font_name
+                size_hint_x: 0.3
+
+            Spinner:
+                id: camera_spinner
+                text: '0'
+                values: ('0', '1')
+                font_name: app.font_name
+                size_hint_x: 0.4
+
+            Button:
+                id: toggle_camera_button
+                text: "カメラ開始"
+                font_name: app.font_name
+                on_press: app.toggle_camera()
+
+        KivyCamera:
+            id: camera_display
+
+        Label:
+            id: result_label
+            text: "カメラは停止しています"
+            font_name: app.font_name
+            font_size: '24sp'
+            size_hint_y: None
+            height: self.texture_size[1] + dp(20)
+
+        ### ★★★ ボタンエリア全体をこのコードに置き換えてください ★★★ ###
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: '100dp' # 2段分の高さを確保
+            spacing: '10dp'
+
+            # --- 1段目のボタン ---
+            BoxLayout:
+                spacing: '10dp'
+                Button:
+                    id: record_button
+                    text: "記録開始"
+                    font_name: app.font_name
+                    font_size: '20sp'
+                    on_press: app.toggle_recording()
+
+                Button:
+                    text: "記録設定"
+                    font_name: app.font_name
+                    font_size: '20sp'
+                    on_press: app.open_record_setting()
+
+            # --- 2段目のボタン ---
+            BoxLayout:
+                spacing: '10dp'
+                Button:
+                    text: "新規登録"
+                    font_name: app.font_name
+                    font_size: '20sp'
+                    on_press: app.open_registration_popup()
+
+
+                ### ★★★ ここから変更 ★★★ ###
+                Button:
+                    text: "ログ確認"
+                    font_name: app.font_name
+                    font_size: '20sp'
+                    on_press: app.show_logs() # 新しいメソッドを呼び出す
+                    
+                Button:
+                    text: "登録者管理"
+                    font_name: app.font_name
+                    font_size: '20sp'
+                    on_press: app.root.current = 'manage'
+
+# --- 登録者管理画面のUIルール ---
+<ManageScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: '10dp'
+        spacing: '10dp'
+
+        Label:
+            text: "登録者一覧"
+            font_name: app.font_name
+            size_hint_y: None
+            height: self.texture_size[1]
+
+        RecycleView:
+            id: user_list_rv
+            viewclass: 'SelectableLabel'
+            
+            SelectableRecycleBoxLayout:
+                default_size: None, dp(44)
+                default_size_hint: 1, None
+                size_hint_y: None
+                height: self.minimum_height
+                orientation: 'vertical'
+                multiselect: False # 複数選択を無効に
+
+        BoxLayout:
+            size_hint_y: None
+            height: '50dp'
+            spacing: '10dp' # ★ ボタン間のスペースを追加
+
+            Button:
+                text: "選択した人を削除"
+                font_name: app.font_name
+                # root は<ManageScreen>自身を指す
+                on_press: root.delete_selected()
+
+            Button:
+                text: "この人を探す (動画から)"
+                font_name: app.font_name
+                on_press: root.open_file_chooser()
+
+            Button:
+                text: "メイン画面に戻る"
+                font_name: app.font_name
+                # app.root はScreenManagerを指す
+                on_press: app.root.current = 'main'
+
+# --- RecycleViewの各行の「見た目」を定義するルール ---
+<SelectableLabel>:
+    # font_nameをappから継承
+    font_name: app.font_name
+    font_size: '18sp'
+    
+    # 選択された時の背景色
+    canvas.before:
+        Color:
+            rgba: (0.2, 0.4, 0.8, 0.6) if self.selected else (0, 0, 0, 0)
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+# --- ポップアップのUIルール ---
+<RegistrationPopup>:
+    size_hint: 0.8, 0.4
+    auto_dismiss: False
+    title: "新しい顔の登録"
+    title_font: app.font_name
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: '10dp'
+        spacing: '10dp'
+
+        Label:
+            text: "登録する名前を入力してください"
+            font_name: app.font_name
+
+        TextInput:
+            id: name_input
+            multiline: False
+            font_name: app.font_name
+
+        BoxLayout:
+            size_hint_y: None
+            height: '40dp'
+            spacing: '10dp'
+
+            Button:
+                text: "撮影開始"
+                font_name: app.font_name
+                on_press: root.submit(name_input.text)
+
+            Button:
+                text: "キャンセル"
+                font_name: app.font_name
+                on_press: root.dismiss()
+
+# --- ★★★ 重複確認ポップアップのUIルール ★★★ ---
+<DuplicateConfirmPopup>:
+    size_hint: 0.9, 0.5
+    auto_dismiss: False
+    title: "重複の可能性があります"
+    title_font: app.font_name
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: '10dp'
+        spacing: '10dp'
+
+        Label:
+            id: confirm_text_label
+            text: "入力された顔は、既に登録されている人物と似ています。"
+            font_name: app.font_name
+
+        BoxLayout:
+            size_hint_y: None
+            height: '50dp'
+            spacing: '10dp'
+
+            Button:
+                text: "はい、同一人物です\n(顔データを追加撮影)"
+                font_name: app.font_name
+                halign: 'center' # テキストを中央揃え
+                on_press: root.submit(True)
+
+            Button:
+                text: "いいえ、別人です\n(新しい人物として登録)"
+                font_name: app.font_name
+                halign: 'center'
+                on_press: root.submit(False)  
+            Button:
+                text: "キャンセル"
+                font_name: app.font_name
+                # ボタンが押されたら、ポップアップを閉じるだけ
+                on_press: root.dismiss()                              
+
+    # --- ↓↓↓ このスクリーンを丸ごと新設 ↓↓↓ ---
+    SearchResultScreen:
+        name: 'search_result'
+
+<SearchResultScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: '10dp'
+        spacing: '10dp'
+
+        Label:
+            id: result_title_label
+            text: "検索結果"
+            font_name: app.font_name
+            size_hint_y: None
+            height: self.texture_size[1]
+
+        RecycleView:
+            id: scene_list_rv
+            viewclass: 'SceneItem' # ★ 新しいviewclass
+            RecycleBoxLayout: # ★ RecycleBoxLayoutを直接使う
+                default_size: None, dp(100) # 各行の高さを調整
+                default_size_hint: 1, None
+                size_hint_y: None
+                height: self.minimum_height
+                orientation: 'vertical'
+        
+        Button:
+            text: "管理画面に戻る"
+            font_name: app.font_name
+            size_hint_y: None
+            height: '50dp'
+            on_press: app.root.current = 'manage'
+
+# --- ★★★ 検索結果の各行の見た目を定義するルール ★★★ ---
+<SceneItem@BoxLayout>:
+    orientation: 'horizontal'
+    padding: '5dp'
+    spacing: '10dp'
+    image_source: ''
+    info_text: ''
+    
+    Image:
+        # ★★★ ここも self -> root に修正 ★★★
+        source: root.image_source
+        size_hint_x: 0.4
+    Label:
+        # ★★★ ここを self -> root に修正 ★★★
+        text: root.info_text
+        font_name: app.font_name
+        halign: 'left'
+        valign: 'top'
+        text_size: self.width, None
+
+# --- ★★★ プログレス（待機中）ポップアップのUIルール ★★★ ---
+#<ProgressPopup@Popup>:
+#   size_hint: 0.8, 0.3
+#    auto_dismiss: False
+#    title: ''
+#    separator_height: 0
+#    Label:
+#        id: progress_label # ★★★ このidを追加
+#        text: "動画を解析中です...\nしばらくお待ちください。"
+#        font_name: app.font_name             
+
+<LogScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: '10dp'
+        spacing: '10dp'
+
+        Label:
+            text: "ログ参照"
+            font_name: app.font_name
+            size_hint_y: None
+            height: self.texture_size[1]
+
+        ### ★★★ ここからが新設部分 ★★★ ###
+        BoxLayout:
+            size_hint_y: None
+            height: '40dp'
+            spacing: '10dp'
+
+            Spinner:
+                id: year_spinner
+                text: "年"
+                font_name: app.font_name
+            Spinner:
+                id: month_spinner
+                text: "月"
+                font_name: app.font_name
+            Spinner:
+                id: day_spinner
+                text: "日"
+                font_name: app.font_name
+            Button:
+                text: "表示"
+                font_name: app.font_name
+                size_hint_x: 0.5
+                on_press: app.view_log_by_date()
+
+        TextInput:
+            id: log_display
+            font_name: app.font_name
+            readonly: True
+            background_color: (0.1, 0.1, 0.1, 1)
+            foreground_color: (1, 1, 1, 1)
+            # ★★★ 残りのスペースを埋めるように変更 ★★★
+            size_hint_y: 1 
+
+        BoxLayout:
+            size_hint_y: None
+            height: '50dp'
+            spacing: '10dp'
+            
+            Button:
+                text: "本日分を削除"
+                font_name: app.font_name
+                on_press: app.delete_log()
+                background_color: (0.8, 0.2, 0.2, 1)
+
+            Button:
+                text: "メイン画面に戻る"
+                font_name: app.font_name
+                on_press: app.root.current = 'main'

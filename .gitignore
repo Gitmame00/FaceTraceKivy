@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+.venv/
+.venv312/
+venv/
+venv312/
+
+# Buildozer files
+.buildozer/
+bin/
+build/
+dist/
+*.apk
+*.aab
+
+# User-generated data
+Record/
+config.json
+temp_scenes/
