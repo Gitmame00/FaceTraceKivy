@@ -51,7 +51,7 @@ fullscreen = 0
 android.api = 30
 android.minapi = 21
 android.sdk = 24
-android.ndk = 19c
+android.ndk = 25b
 android.archs = armeabi-v7a,arm64-v8a
 
 # (Android) アプリが必要とする権限 (カンマ区切り)
