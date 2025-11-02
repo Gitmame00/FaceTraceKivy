@@ -36,10 +36,10 @@ requirements = python3==3.8.10,kivy==2.1.0,opencv,numpy==1.21.6,pillow==9.5.0,pl
 orientation = portrait
 
 # (オプション) アプリのアイコンとして使用する画像のパス
-icon.filename = %(source.dir)s/icon.png
+#icon.filename = %(source.dir)s/icon.png
 
 # (オプション) スプラッシュスクリーン (起動画面) として使用する画像のパス
-presplash.filename = %(source.dir)s/presplash.png
+#presplash.filename = %(source.dir)s/presplash.png
 
 # (オプション) WebViewを使用する場合のローディング画像
 # presplash.filename = %(source.dir)s/data/images/loader.gif
