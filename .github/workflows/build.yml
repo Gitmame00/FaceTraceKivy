@@ -7,27 +7,38 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04 # ★★★ OSのバージョンを22.04に固定する ★★★
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4  # ★ v3 -> v4に更新
+      uses: actions/checkout@v4
 
     - name: Set up Java 11
-      uses: actions/setup-java@v4  # ★ v3 -> v4に更新
+      uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
         java-version: '11'
 
     - name: Set up Python 3.8
-      uses: actions/setup-python@v5 # ★ v4 -> v5に更新
+      uses: actions/setup-python@v5
       with:
         python-version: '3.8'
 
     - name: Install dependencies
       run: |
         sudo apt-get update
+        # ★★★ ppa:deadsnakes/ppa を追加して、python3.8をインストールする ★★★
+        sudo apt-get install -y software-properties-common
+        sudo add-apt-repository ppa:deadsnakes/ppa -y
+        sudo apt-get update
+        # ★★★ python3.8-distutils と unzip を追加 ★★★
         sudo apt-get install -y \
+          git \
+          python3.8 \
+          python3.8-distutils \
+          python3-pip \
+          openjdk-11-jdk \
+          autoconf \
           libtool \
           pkg-config \
           zlib1g-dev \
@@ -36,7 +47,8 @@ jobs:
           libtinfo5 \
           cmake \
           libffi-dev \
-          libssl-dev
+          libssl-dev \
+          unzip
         python3.8 -m pip install --upgrade pip
         python3.8 -m pip install buildozer cython==0.29.34
 
@@ -45,7 +57,7 @@ jobs:
         buildozer -v android debug
 
     - name: Upload APK
-      uses: actions/upload-artifact@v4 # ★★★ ここが最も重要な変更点です ★★★
+      uses: actions/upload-artifact@v4
       with:
         name: facetrace-apk
         path: bin/*.apk
