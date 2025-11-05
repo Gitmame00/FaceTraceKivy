@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04 # ★★★ OSのバージョンを22.04に固定する ★★★
+    runs-on: ubuntu-22.04
 
     steps:
     - name: Checkout repository
@@ -27,11 +27,9 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        # ★★★ ppa:deadsnakes/ppa を追加して、python3.8をインストールする ★★★
         sudo apt-get install -y software-properties-common
         sudo add-apt-repository ppa:deadsnakes/ppa -y
         sudo apt-get update
-        # ★★★ python3.8-distutils と unzip を追加 ★★★
         sudo apt-get install -y \
           git \
           python3.8 \
@@ -54,8 +52,9 @@ jobs:
 
     - name: Build with Buildozer
       run: |
-        yes | sdkmanager --licenses
-        buildozer -v android debug
+        # ★★★ ここが最も重要な変更点です ★★★
+        # yesコマンドは、buildozerコマンド全体にパイプで繋げます
+        yes | buildozer -v android debug
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
