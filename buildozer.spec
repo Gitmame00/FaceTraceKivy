@@ -28,9 +28,7 @@ source.include_patterns = assets/fonts/*.ttf, *.xml, *.db
 # (必須) 起動時に実行されるスクリプトのバージョン
 version = 0.1
 
-# (必須) アプリが依存するPythonライブラリの一覧 (カンマ区切り)
-# ★★★ あなたの指定に基づき、バージョンを固定 ★★★
-requirements = python3==3.8.10,kivy==2.1.0,opencv,numpy==1.21.6,pillow==9.5.0,plyer==2.1.0
+requirements = python3,kivy,opencv,numpy,pillow,plyer
 
 # (オプション) アプリの向き (landscape, portrait, all)
 orientation = portrait
