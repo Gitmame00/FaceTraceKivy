@@ -11,16 +11,16 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4  # ★ v3 -> v4に更新
 
     - name: Set up Java 11
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4  # ★ v3 -> v4に更新
       with:
         distribution: 'temurin'
         java-version: '11'
 
     - name: Set up Python 3.8
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5 # ★ v4 -> v5に更新
       with:
         python-version: '3.8'
 
@@ -45,7 +45,7 @@ jobs:
         buildozer -v android debug
 
     - name: Upload APK
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4 # ★★★ ここが最も重要な変更点です ★★★
       with:
         name: facetrace-apk
         path: bin/*.apk
