@@ -27,8 +27,7 @@ source.include_patterns = assets/fonts/*.ttf, *.xml, *.db
 # (必須) バージョン
 version = 0.1
 
-# ✅ 安定構成（最重要）
-requirements = python3==3.8.10, kivy==2.1.0, opencv-python==4.5.5.64, numpy==1.21.6, pillow==9.5.0, plyer==2.1.0
+requirements = python3,kivy,opencv-python,numpy,pillow,plyer
 
 # (オプション) アプリの向き
 orientation = portrait
